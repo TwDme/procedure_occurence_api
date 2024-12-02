@@ -1,0 +1,114 @@
+openapi: 3.0.0
+info:
+  title: Procedure API
+  version: 1.0.0
+  description: REST API for querying unique persons and providers based on procedures.
+
+servers:
+  - url: http://localhost:5000
+    description: Local
+
+paths:
+  /unique-persons:
+    post:
+      summary: Get the count of unique persons for the last N days.
+      description: Returns the count of unique persons who had procedures within the last N days.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                days:
+                  type: integer
+                  description: Number of days to look back from the current date.
+              required:
+                - days
+      responses:
+        '200':
+          description: Successful response with the count of unique persons.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  unique_person_count:
+                    type: integer
+                    description: Count of unique persons.
+        '400':
+          description: Bad Request - Missing or invalid parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /unique-providers-by-procedure-type:
+    post:
+      summary: Get unique providers and persons by procedure type.
+      description: Returns the number of unique providers and persons for a specified procedure type, grouped by procedure date.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                procedure_type:
+                  type: integer
+                  description: The ID of the procedure type to filter by.
+              required:
+                - procedure_type
+      responses:
+        '200':
+          description: Successful response with unique provider and person counts grouped by procedure date.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    procedure_date:
+                      type: string
+                      format: date
+                      description: The date of the procedure.
+                    unique_providers:
+                      type: integer
+                      description: Number of unique providers on that date.
+                    unique_persons:
+                      type: integer
+                      description: Number of unique persons on that date.
+                    total_unique:
+                      type: integer
+                      description: Sum of unique providers and persons.
+        '400':
+          description: Bad Request - Missing or invalid parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
